@@ -1,16 +1,24 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from './shared/guards/auth.guard';
-import { UpdateComponent } from './update/update.component';
+import { HomeComponent } from './pages/home/home.component';
+import { UpdateComponent } from './pages/update/update.component';
 
 const appRoutes: Routes = [
   {
+    path: '',
+    component: HomeComponent,
+    pathMatch: 'full'
+  }, {
     path: 'update/:id',
     component: UpdateComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    pathMatch: 'full'
+  }, {
+    path: '**',
+    redirectTo: '/'
   }
 ];
-// const appRoutes: Routes = [];
 
 @NgModule({
   imports: [RouterModule.forRoot(appRoutes)],

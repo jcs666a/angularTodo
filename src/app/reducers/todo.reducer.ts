@@ -1,5 +1,5 @@
 import { TodoModel } from '../models/todos.model';
-import * as TodosActions from '../actions/todos';
+import * as TodosActions from '../actions/todos.actions';
 
 export function todosReducer(state: TodoModel[] = [], action: TodosActions.Actions) {
     switch(action.type) {

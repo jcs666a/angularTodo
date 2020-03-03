@@ -1,10 +1,2 @@
 <mat-toolbar color="primary">TODO-APP</mat-toolbar>
-
 <router-outlet></router-outlet>
-
-<div *ngIf="!isOnUpdate">
-    <div ngClass="mat-toolbar-single-row subtitle">Today</div>
-    <app-todo-list></app-todo-list>
-    <mat-spinner *ngIf="todosLen == 0"></mat-spinner>
-    <button title="Add" mat-fab color="primary" (click)="openDialog()">+</button>
-</div>

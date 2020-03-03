@@ -1,0 +1,19 @@
+<div ngClass="container">
+
+  <h3>Updating todo</h3>
+
+  <label>
+    Task description:
+    <input type="text" [(ngModel)]="taskDescription" />
+  </label>
+
+  <div>
+    <button mat-raised-button color="warn" title="Canel changes" (click)="cancel()">
+      Cancel
+    </button>
+    <button mat-raised-button color="primary" title="Save changes" (click)="save()">
+      Save
+    </button>
+  </div>
+
+</div>

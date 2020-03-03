@@ -1,5 +1,5 @@
 <mat-list role="list">
-    <mat-list-item role="listitem" *ngFor="let todo of todos | async">
+    <mat-list-item role="listitem" *ngFor="let todo of todos$ | async">
         <div ngClass="item-container" [class.item-completed]="todo.isCompleted">
             <mat-icon aria-hidden="false" aria-label="Watch">watch_later</mat-icon>
             <div ngClass="item-content">

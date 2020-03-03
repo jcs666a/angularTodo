@@ -1,0 +1,6 @@
+<div>
+    <div ngClass="mat-toolbar-single-row subtitle">Today</div>
+    <app-todo-list></app-todo-list>
+    <mat-spinner *ngIf="todosLen == 0"></mat-spinner>
+    <button title="Add" mat-fab color="primary" (click)="openDialog()">+</button>
+</div>

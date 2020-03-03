@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { MatDialog } from '@angular/material/dialog';
 import { TodoModel } from '../../../models/todos.model';
@@ -8,7 +8,7 @@ import { AppState } from '../../../app.state';
 import { DataService } from '../../../data.service';
 import { DialogLoginComponent } from '../dialog-login/dialog-login.component';
 import { Router } from "@angular/router";
-import * as TodosActions from '../../../actions/todos';
+import * as TodosActions from '../../../actions/todos.actions';
 import * as UserActions from '../../../actions/user.actions';
 
 @Component({
@@ -16,10 +16,11 @@ import * as UserActions from '../../../actions/user.actions';
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.scss']
 })
-export class TodoListComponent implements OnInit {
-  todos: Observable<TodoModel[]>;
+export class TodoListComponent implements OnInit, OnDestroy {
+  private todosSubscription: Subscription[] = [];
+  todos$: Observable<TodoModel[]>;
   todosLen: number;
-  userInfo: Observable<UserModel[]>;
+  userInfo$: Observable<UserModel[]>;
   isLogged: boolean = false;
 
   constructor(
@@ -27,27 +28,33 @@ export class TodoListComponent implements OnInit {
     private dataService: DataService,
     private store: Store<AppState>,
     public loginDialog: MatDialog) {
-    this.todos = store.select('todos');
-    this.userInfo = store.select('user');
-    this.todos.subscribe(result => {
+    this.userInfo$ = store.select('user');
+    this.todos$ = store.select('todos');
+    this.todosSubscription.push(this.todos$.subscribe(result => {
       this.todosLen = result.length;
-    });
+    }));
   }
 
   ngOnInit(): void {
     if(this.todosLen === 0) {
-      this.dataService.getTodos()
-        .subscribe((data: TodoModel[]) => {
-          data.map(todo => {
-            this.store.dispatch(
-              new TodosActions.InsertTodo(todo)
-            )
-          });
-        });
+      this.todosSubscription.push(
+        this.dataService.getTodos()
+          .subscribe((data: TodoModel[]) => {
+            data.map(todo => {
+              this.store.dispatch(
+                new TodosActions.InsertTodo(todo)
+              )
+            });
+          })
+      );
     }
-    this.userInfo.subscribe(result => {
+    this.todosSubscription.push(this.userInfo$.subscribe(result => {
       this.isLogged = result[0].isLogged;
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.todosSubscription.forEach(subuscription => subuscription.unsubscribe());
   }
 
   editTodo(id:number) {
@@ -56,15 +63,6 @@ export class TodoListComponent implements OnInit {
     } else {
       this.openDialog(id);
     }
-    /*
-    this.store.dispatch(
-      new TodosActions.UpdateTodo({
-        id: id,
-        taskDescription: 'Ahora es esto...',
-        isCompleted: false
-      })
-    )
-    */
   }
 
   deleteTodo(id:number) {
@@ -73,14 +71,13 @@ export class TodoListComponent implements OnInit {
     )
   }
 
-
   openDialog(id:number): void {
     const dialogRef = this.loginDialog.open(DialogLoginComponent, {
       width: '400px',
       data: {id: 1, name: ''}
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.todosSubscription.push(dialogRef.afterClosed().subscribe(result => {
       result = typeof result === 'string' ? result.trim() : null;
       if(result) {
         this.store.dispatch(
@@ -91,6 +88,6 @@ export class TodoListComponent implements OnInit {
         );
         this.router.navigate(['update', id]);
       }
-    });
+    }));
   }
 }

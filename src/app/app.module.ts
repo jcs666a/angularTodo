@@ -19,19 +19,20 @@ import { DataService } from './data.service';
 import { SharedModule } from './shared/shared.module';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
-import { UpdateComponent } from './update/update.component';
+import { UpdateComponent } from './pages/update/update.component';
+import { HomeComponent } from './pages/home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    UpdateComponent
+    UpdateComponent,
+    HomeComponent
   ],
   imports: [
-    AppRoutingModule,
-    BrowserAnimationsModule,
     BrowserModule,
-    CoreModule,
     FormsModule,
+    BrowserAnimationsModule,
+    CoreModule,
     HttpClientModule,
     MatDialogModule,
     MatInputModule,
@@ -42,7 +43,11 @@ import { UpdateComponent } from './update/update.component';
       todos: todosReducer,
       user: userReducer
     }),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })
+    AppRoutingModule,
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production
+    })
   ],
   providers: [DataService],
   bootstrap: [AppComponent]
